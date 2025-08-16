@@ -4,16 +4,18 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.dagger)
+    kotlin("kapt")
 }
 
 android {
     namespace = "com.example.lpl"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.lpl"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -64,9 +66,9 @@ dependencies {
 
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
-    // Hilt
-    implementation("com.google.dagger:hilt-android:2.56.2")
-    //implementation("com.google.dagger:hilt-android-compiler:2.56.2")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.navigation:navigation-compose:2.9.1")
+    implementation(libs.dagger.hilt)
+    implementation(libs.hilt.compose.navigation)
+    kapt(libs.dagger.kapt)
+
+    implementation(libs.coil)
 }
