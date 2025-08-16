@@ -10,6 +10,7 @@ import com.example.lpl.domian.model.Client
 import com.example.lpl.domian.repository.ClientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +24,6 @@ class MainActivityViewModel @Inject constructor(val repository: ClientRepository
     val clients = _clients
     fun getClientsData() {
 
-        Log.d("demo", "yes")
         viewModelScope.launch {
 
             when (val response = repository.getClientsData()) {
@@ -41,6 +41,33 @@ class MainActivityViewModel @Inject constructor(val repository: ClientRepository
                     _clients.emit(UiState.Error("response.uiErrorMessage"))
                 }
             }
+        }
+    }
+
+    fun updateClientImage(id: Int, imagePath: String) {
+        _clients.value.data?.let { clients ->
+
+            val k = clients.toMutableList()
+
+            k.forEach { client ->
+                client.image = imagePath
+            }
+
+            _clients.update { UiState.Loaded(k) }
+
+
+//            clients.find { it.id == id }?.let { client ->
+//
+//                val updatedClientImage = client.copy(image = imagePath)
+//
+//                var ss = clients.toMutableList()
+//
+////                ss.forEach {
+////                    if (it.id == id)
+////
+////                }
+//
+//            }
         }
     }
 }

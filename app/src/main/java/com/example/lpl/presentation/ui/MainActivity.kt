@@ -1,11 +1,15 @@
 package com.example.lpl.presentation.ui
 
 import android.R
+import android.content.ActivityNotFoundException
+import android.graphics.ImageDecoder
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
@@ -30,6 +34,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +56,7 @@ import com.example.lpl.data.util.UiState
 import com.example.lpl.domian.model.Client
 import com.example.lpl.ui.theme.LPLTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.collections.forEach
 import kotlin.getValue
 
 @AndroidEntryPoint
@@ -66,7 +76,7 @@ class MainActivity : ComponentActivity() {
                 when (clients) {
                     is UiState.Loaded -> {
                         clients.data?.let {
-                            Greeting(it)
+                            Greeting(viewModel, it)
                         }
                     }
 
@@ -81,22 +91,54 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(clients: List<Client>) {
+fun Greeting(viewModel: MainActivityViewModel, clients: List<Client>) {
     LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
         items(clients) { client ->
 
-            ClientCard(client)
+            ClientCard(viewModel, client)
         }
     }
 }
 
 @Composable
-fun ClientCard(client: Client) {
+fun ClientCard(viewModel: MainActivityViewModel, client: Client) {
+    var openGallery by rememberSaveable { mutableStateOf(false) }
+    var updateImage by rememberSaveable { mutableStateOf(false) }
+
+    var selectedImageUri = ""
+
+    if (updateImage) {
+        viewModel.updateClientImage(client.id, selectedImageUri)
+    }
+
+
+    val galleryLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            uri?.let {
+
+            selectedImageUri = it.toString()
+
+            }
+        }
+
+    //LaunchedEffect(openGallery) {
+        if (openGallery) {
+        try {
+            galleryLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+            openGallery = false
+        } catch (_: ActivityNotFoundException) {
+            //context.showToast(galleryErrorMessage)
+        }
+        }
+    //}
+
     Card(
         modifier = Modifier
             .padding(10.dp)
             .fillMaxWidth()
-            .height(240.dp),
+            .height(300.dp),
         border = BorderStroke(2.dp, Color.Blue),
     ) {
 
@@ -109,24 +151,32 @@ fun ClientCard(client: Client) {
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = 16.dp),
+                .padding( 12.dp),
             //verticalAlignment = Alignment.CenterVertically
 
 
         ) {
             Card(
                 modifier = Modifier.padding(top = 16.dp),
-                shape = CircleShape,
-                //elevation = 2.dp
+                shape = CircleShape
             )
             {
-                val painter = rememberAsyncImagePainter(R.drawable.ic_menu_add)
+
+                val path = client.image?.let {
+                    if (it.isEmpty())
+                        R.drawable.ic_menu_add
+                    else
+                        it
+                } ?: R.drawable.ic_menu_add
+
+                val painter2 =  rememberAsyncImagePainter(path)
 
                 Image(
-                    painter,
+                    painter2,
                     modifier = Modifier
                         .size(80.dp)
-                        .padding(5.dp),
+                        .padding(5.dp)
+                        .clickable{ openGallery = true},
                     colorFilter = ColorFilter.tint(color = Color.Blue),
                     contentDescription = "",
                 )
@@ -134,49 +184,31 @@ fun ClientCard(client: Client) {
 
             Column {
 
-                TextComponent("Name: ${client.name}")
-                TextComponent("ID: ${client.id}")
-                TextComponent("Email: ${client.email}")
-                TextComponent("Body: ${client.body}")
+                TextComponent("Name: ",client.name)
+                TextComponent("ID: ", client.id.toString())
+                TextComponent("Email: ",client.email)
+                TextComponent("Body: ",client.body)
             }
         }
-
     }
-
 }
 
 @Composable
-fun TextComponent(text: String) {
-    Text(
-        modifier = Modifier.padding(start = 6.dp, top = 4.dp),
-        text = text,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.SemiBold
-    )
-}
+fun TextComponent(type: String, text: String) {
+    Row {
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LPLTheme {
-
-        Card(
-            modifier = Modifier.fillMaxSize(),
-            shape = CircleShape,
-            //elevation = 2.dp
+        Text(
+            modifier = Modifier.padding(start = 6.dp, top = 4.dp),
+            text = type,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold
         )
-        {
 
-            val painter = rememberAsyncImagePainter(R.drawable.ic_popup_sync)
-
-            Image(
-                painter,
-                modifier = Modifier
-                    .fillMaxSize(.3f)
-                    .padding(5.dp),
-                colorFilter = ColorFilter.tint(color = Color.Blue),
-                contentDescription = "",
-            )
-        }
+        Text(
+            modifier = Modifier.padding(start = 6.dp, top = 4.dp),
+            text = text.replace("\n", ". "),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal
+        )
     }
 }

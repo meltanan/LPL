@@ -5,5 +5,6 @@ data class Client(
     val id: Int,
     val name: String,
     val email: String,
-    val body: String
+    val body: String,
+    var image: String = ""
 )
