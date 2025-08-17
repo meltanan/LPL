@@ -30,7 +30,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 dagger-hilt = { module = "com.google.dagger:hilt-android", version = "2.52" }
 dagger-kapt = { module = 'com.google.dagger:hilt-android-compiler', version = "2.52" }
 hilt-compose-navigation = { module = "androidx.hilt:hilt-navigation-compose", version = "1.2.0" }
-coil = {module = "io.coil-kt:coil-compose", version = "2.7.0"}
+coil = {module = "io.coil-kt:coil-compose", version = "2.4.0"}
 
 
 [plugins]

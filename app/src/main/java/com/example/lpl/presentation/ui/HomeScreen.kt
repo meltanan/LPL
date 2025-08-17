@@ -28,7 +28,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,18 +52,19 @@ fun HomeScree(
         var updateImage by rememberSaveable { mutableStateOf(false) }
         val galleryErrorMessage = "There is no gallery on your device"
 
-        var selectedImageUri = ""
+        var selectedImageUri by rememberSaveable { mutableStateOf("") }
 
         if (updateImage) {
             viewModel.updateClientImage(client.id, selectedImageUri)
+            updateImage = false
         }
 
 
         val galleryLauncher =
             rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 uri?.let {
-
-                    selectedImageUri = it.toString()
+                    selectedImageUri = uri.toString()
+                    updateImage = true
 
                 }
             }
@@ -83,9 +83,10 @@ fun HomeScree(
 
         Card(
             modifier = Modifier
+                .background(Color.White)
                 .padding(10.dp)
                 .fillMaxWidth()
-                .height(300.dp),
+                .height(340.dp),
             border = BorderStroke(2.dp, Color.Blue),
         ) {
 
@@ -93,10 +94,7 @@ fun HomeScree(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
                     .fillMaxWidth()
-                    .padding( 12.dp),
-                //verticalAlignment = Alignment.CenterVertically
-
-
+                    .padding( 12.dp)
             ) {
                 Card(
                     modifier = Modifier.padding(top = 16.dp),
@@ -119,7 +117,6 @@ fun HomeScree(
                             .size(80.dp)
                             .padding(5.dp)
                             .clickable{ openGallery = true},
-                        colorFilter = ColorFilter.tint(color = Color.Blue),
                         contentDescription = "",
                     )
                 }

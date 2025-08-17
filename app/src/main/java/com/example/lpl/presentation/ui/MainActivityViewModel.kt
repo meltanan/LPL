@@ -1,9 +1,7 @@
 package com.example.lpl.presentation.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lpl.data.util.Resource
 import com.example.lpl.data.util.UiState
 import com.example.lpl.domian.model.Client
@@ -45,29 +43,17 @@ class MainActivityViewModel @Inject constructor(val repository: ClientRepository
     }
 
     fun updateClientImage(id: Int, imagePath: String) {
+
         _clients.value.data?.let { clients ->
+            val clientsListToBeUpdated = clients.toMutableList()
 
-            val k = clients.toMutableList()
-
-            k.forEach { client ->
-                client.image = imagePath
+            clientsListToBeUpdated.forEach { client ->
+                if (client.id == id) {
+                    client.image = imagePath
+                }
             }
 
-            _clients.update { UiState.Loaded(k) }
-
-
-//            clients.find { it.id == id }?.let { client ->
-//
-//                val updatedClientImage = client.copy(image = imagePath)
-//
-//                var ss = clients.toMutableList()
-//
-////                ss.forEach {
-////                    if (it.id == id)
-////
-////                }
-//
-//            }
+            _clients.update { UiState.Loaded(clientsListToBeUpdated) }
         }
     }
 }
