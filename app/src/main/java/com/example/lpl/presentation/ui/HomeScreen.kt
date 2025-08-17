@@ -11,7 +11,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,7 +40,11 @@ import com.example.lpl.common.showToast
 import com.example.lpl.data.util.UiState
 import com.example.lpl.domian.model.Client
 import android.content.res.Configuration
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun HomeScree(
@@ -54,21 +57,21 @@ fun HomeScree(
     fun ClientCard(client: Client) {
         val configuration = LocalConfiguration.current
 
-            val cardHeight = when (configuration.orientation) {
-                Configuration.ORIENTATION_LANDSCAPE -> {
-                    200
-                    // Your landscape-specific UI elements here
-                }
-
-                Configuration.ORIENTATION_PORTRAIT -> {
-                    326
-                    // Your portrait-specific UI elements here
-                }
-
-                else -> {
-                    326
-                }
+        val cardHeight = when (configuration.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> {
+                200
+                // Your landscape-specific UI elements here
             }
+
+            Configuration.ORIENTATION_PORTRAIT -> {
+                360
+                // Your portrait-specific UI elements here
+            }
+
+            else -> {
+                326
+            }
+        }
 
         var openGallery by rememberSaveable { mutableStateOf(false) }
         var updateImage by rememberSaveable { mutableStateOf(false) }
@@ -111,47 +114,49 @@ fun HomeScree(
                 .height(cardHeight.dp),
             border = BorderStroke(2.dp, Color.Blue),
         ) {
+            Column {
 
-            Row(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxWidth()
-                    .padding( 12.dp)
-            ) {
-                Card(
-                    modifier = Modifier.padding(top = 16.dp),
-                    shape = CircleShape
-                )
-                {
 
-                    val path = client.image?.let {
-                        if (it.isEmpty())
-                            R.drawable.ic_menu_add
-                        else
-                            it
-                    } ?: R.drawable.ic_menu_add
+                Row(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
 
-                    val painter2 =  rememberAsyncImagePainter(path)
+                        val path = client.image?.let {
+                            if (it.isEmpty())
+                                R.drawable.ic_menu_add
+                            else
+                                it
+                        } ?: R.drawable.ic_menu_add
 
-                    Image(
-                        painter2,
-                        modifier = Modifier
-                            .size(80.dp)
-                            .padding(5.dp)
-                            .clickable{ openGallery = true},
-                        contentDescription = "",
-                    )
+                        val painter2 = rememberAsyncImagePainter(path)
+
+                    Box(modifier = Modifier.padding(top = 12.dp)) {
+                        Image(
+                            painter2,
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(CircleShape)
+                                .border(2.dp, Color.Gray, CircleShape)
+                                .clickable { openGallery = true },
+                            contentScale = ContentScale.FillWidth,
+                            contentDescription = "",
+                        )
+                    }
+
+
+                    Column() {
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        TextComponent("Name: ", client.name)
+                        TextComponent("ID: ", client.id.toString())
+                        TextComponent("Email: ", client.email)
+                    }
                 }
-
-                Column(modifier = Modifier.fillMaxHeight()) {
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    TextComponent("Name: ",client.name)
-                    TextComponent("ID: ", client.id.toString())
-                    TextComponent("Email: ",client.email)
-                    TextComponent("Body: ",client.body)
-                }
+                    TextComponent("Body: ", client.body, startPadding = 12, topPadding = 0)
             }
         }
     }
@@ -161,7 +166,7 @@ fun HomeScree(
         LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
             items(clients) { client ->
 
-                ClientCard( client)
+                ClientCard(client)
             }
         }
     }

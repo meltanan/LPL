@@ -15,18 +15,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun TextComponent(type: String, text: String) {
+fun TextComponent(type: String, text: String, startPadding: Int = 6, topPadding: Int = 4) {
     Row {
 
         Text(
-            modifier = Modifier.padding(start = 6.dp, top = 4.dp),
+            modifier = Modifier.padding(start = startPadding.dp, top = topPadding.dp),
             text = type,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold
         )
 
         Text(
-            modifier = Modifier.padding(start = 6.dp, top = 4.dp),
+            modifier = Modifier.padding(top = topPadding.dp),
             text = text.replace("\n", ". "),
             fontSize = 16.sp,
             fontWeight = FontWeight.Normal
