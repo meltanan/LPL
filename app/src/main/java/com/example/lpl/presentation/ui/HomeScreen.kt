@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,12 +59,10 @@ fun HomeScree(
         val cardHeight = when (configuration.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {
                 200
-                // Your landscape-specific UI elements here
             }
 
             Configuration.ORIENTATION_PORTRAIT -> {
                 360
-                // Your portrait-specific UI elements here
             }
 
             else -> {
@@ -182,8 +179,8 @@ fun HomeScree(
             }
         }
 
-        else -> {
-            Text("Nope")
+        is UiState.Error -> {
+            LocalContext.current.showToast(clients.message)
         }
     }
 }

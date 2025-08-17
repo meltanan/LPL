@@ -15,7 +15,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     @Provides
     @Singleton
     fun provideClientAPI(): ClientAPI {
@@ -26,17 +25,15 @@ object AppModule {
 
     @Singleton
     fun <S> createService(serviceClass: Class<S>): S {
+        val baseURL = "https://jsonplaceholder.typicode.com/"
         val interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
         val httpClientBuilder = OkHttpClient.Builder()
 
         httpClientBuilder.addInterceptor(interceptor)
-        //add this to log out user when token or response is not valid
-        // httpClientBuilder.authenticator(TokenAuthenticator())
         httpClientBuilder.connectTimeout(90, TimeUnit.SECONDS)
         httpClientBuilder.readTimeout(90, TimeUnit.SECONDS)
-        httpClientBuilder.writeTimeout(90, TimeUnit.SECONDS)
 
-        val retrofit = Retrofit.Builder().baseUrl("https://jsonplaceholder.typicode.com/")
+        val retrofit = Retrofit.Builder().baseUrl(baseURL)
             .addConverterFactory(GsonConverterFactory.create()).client(httpClientBuilder.build())
             .build().create(serviceClass)
         return retrofit

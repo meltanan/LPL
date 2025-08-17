@@ -9,8 +9,4 @@ sealed class UiState<T>(val data: T?) {
     class Loading<T>(data: T? = null) : UiState<T>(data = data)
     class Loaded<T>(data: T) : UiState<T>(data)
     data class Error<T>(val message: String, val responseCode: Int = 0) : UiState<T>(null)
-
-    companion object {
-        const val loaded = "loaded"
-    }
 }

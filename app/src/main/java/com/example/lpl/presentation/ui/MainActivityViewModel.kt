@@ -36,14 +36,13 @@ class MainActivityViewModel @Inject constructor(val repository: ClientRepository
                 }
 
                 else -> {
-                    _clients.emit(UiState.Error("response.uiErrorMessage"))
+                    _clients.emit(UiState.Error(response.uiErrorMessage))
                 }
             }
         }
     }
 
     fun updateClientImage(id: Int, imagePath: String) {
-
         _clients.value.data?.let { clients ->
             val clientsListToBeUpdated = clients.toMutableList()
 

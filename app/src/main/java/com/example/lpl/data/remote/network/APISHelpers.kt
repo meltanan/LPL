@@ -1,6 +1,5 @@
 package com.example.lpl.data.remote.network
 
-
 import android.util.Log
 import com.example.lpl.common.ApiResponseErrors
 import com.example.lpl.data.util.Resource
@@ -12,13 +11,9 @@ import javax.inject.Inject
 import javax.net.ssl.HttpsURLConnection
 
 class APISHelpers @Inject constructor() {
-
-
     suspend fun <T> callApi(requestFunc: suspend () -> Response<T>): Resource<T> {
         val tag = "APIHelper"
         val response: Response<T>
-
-        //if (wifiStatus.value == ConnectivityObserver.WifiStatus.Available) {
 
         try {
             response = requestFunc.invoke()
@@ -99,9 +94,5 @@ class APISHelpers @Inject constructor() {
                 }
             }
         }
-//    } else {
-//        return Resource.Error(uiErrorMessage = "Check your internet connection")
-//    }
     }
-
 }
