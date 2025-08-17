@@ -42,8 +42,12 @@ import android.content.res.Configuration
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 
 @Composable
 fun HomeScree(
@@ -51,36 +55,41 @@ fun HomeScree(
 ) {
 
     val clients = viewModel.clients.collectAsStateWithLifecycle().value
+    var refreshData by rememberSaveable { mutableStateOf(false) }
+    val galleryErrorMessage = "There is no gallery on your device"
+    val configuration = LocalConfiguration.current
+
+    var selectedImageUri by rememberSaveable { mutableStateOf("") }
+
+    val cardHeight = when (configuration.orientation) {
+        Configuration.ORIENTATION_LANDSCAPE -> {
+            200
+        }
+
+        Configuration.ORIENTATION_PORTRAIT -> {
+            360
+        }
+
+        else -> {
+            326
+        }
+    }
+
+    if (refreshData) {
+        viewModel.getClientsData()
+        refreshData = false
+    }
 
     @Composable
     fun ClientCard(client: Client) {
-        val configuration = LocalConfiguration.current
-
-        val cardHeight = when (configuration.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE -> {
-                200
-            }
-
-            Configuration.ORIENTATION_PORTRAIT -> {
-                360
-            }
-
-            else -> {
-                326
-            }
-        }
 
         var openGallery by rememberSaveable { mutableStateOf(false) }
         var updateImage by rememberSaveable { mutableStateOf(false) }
-        val galleryErrorMessage = "There is no gallery on your device"
-
-        var selectedImageUri by rememberSaveable { mutableStateOf("") }
 
         if (updateImage) {
             viewModel.updateClientImage(client.id, selectedImageUri)
             updateImage = false
         }
-
 
         val galleryLauncher =
             rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -113,7 +122,6 @@ fun HomeScree(
         ) {
             Column {
 
-
                 Row(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background)
@@ -121,14 +129,14 @@ fun HomeScree(
                         .padding(12.dp)
                 ) {
 
-                        val path = client.image?.let {
-                            if (it.isEmpty())
-                                R.drawable.ic_menu_add
-                            else
-                                it
-                        } ?: R.drawable.ic_menu_add
+                    val path = client.image?.let {
+                        if (it.isEmpty())
+                            R.drawable.ic_menu_add
+                        else
+                            it
+                    } ?: R.drawable.ic_menu_add
 
-                        val painter2 = rememberAsyncImagePainter(path)
+                    val painter2 = rememberAsyncImagePainter(path)
 
                     Box(modifier = Modifier.padding(top = 12.dp)) {
                         Image(
@@ -153,14 +161,14 @@ fun HomeScree(
                         TextComponent("Email: ", client.email)
                     }
                 }
-                    TextComponent("Body: ", client.body, startPadding = 12, topPadding = 0)
+                TextComponent("Body: ", client.body, startPadding = 12, topPadding = 0)
             }
         }
     }
 
     @Composable
     fun ShowClientsData(clients: List<Client>) {
-        LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
+        LazyColumn(modifier = Modifier.padding(top = 20.dp, bottom = 40.dp)) {
             items(clients) { client ->
 
                 ClientCard(client)
@@ -180,7 +188,23 @@ fun HomeScree(
         }
 
         is UiState.Error -> {
-            LocalContext.current.showToast(clients.message)
+            val image = com.example.lpl.R.drawable.nowifi
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                AsyncImage(
+                    image,
+                    contentDescription = ""
+                )
+
+                Text(clients.message)
+
+                Button(onClick = {
+                    refreshData = true
+                }) {
+                    Text("Refresh")
+                }
+            }
         }
     }
 }

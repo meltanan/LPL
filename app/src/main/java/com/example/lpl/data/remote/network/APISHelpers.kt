@@ -73,7 +73,7 @@ class APISHelpers @Inject constructor() {
                     Log.e(tag, "IOException: " + throwable.message.toString())
 
                     Resource.Error(
-                        uiErrorMessage = "Check your internet connection"
+                        uiErrorMessage = "Check your internet connection please!"
                     )
                 }
 
