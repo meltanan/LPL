@@ -24,11 +24,10 @@ class APISHelpers @Inject constructor() {
             response = requestFunc.invoke()
             return if (response.isSuccessful) {
                 if (response.body() != null) {
-                    Resource.Success(data = response.body(), responseCode = response.code())
+                    Resource.Success(data = response.body())
                 } else {
                     Resource.Error(
-                        uiErrorMessage = "An internal error occurred",
-                        responseCode = HttpsURLConnection.HTTP_FORBIDDEN
+                        uiErrorMessage = "An internal error occurred"
                     )
                 }
             } else {
@@ -39,35 +38,27 @@ class APISHelpers @Inject constructor() {
                 when {
                     response.code() == HttpsURLConnection.HTTP_BAD_REQUEST -> {
                         Resource.Error(
-                            actualErrorReturnedFromBackend = responseError,
-                            uiErrorMessage = "An internal error occurred",
-                            responseCode = response.code()
+                            uiErrorMessage = "An internal error occurred"
                         )
                     }
 
                     response.code() == HttpsURLConnection.HTTP_UNAUTHORIZED -> {
 
                         Resource.Error(
-                            actualErrorReturnedFromBackend = response.message(),
-                            uiErrorMessage = "Unauthorized",
-                            responseCode = response.code()
+                            uiErrorMessage = "Unauthorized"
                         )
                     }
 
                     response.code() == HttpsURLConnection.HTTP_FORBIDDEN -> {
 
                         Resource.Error(
-                            actualErrorReturnedFromBackend = responseError,
-                            uiErrorMessage = "You do not have permission for this action. Contact your office.",
-                            responseCode = response.code()
+                            uiErrorMessage = "You do not have permission for this action"
                         )
                     }
 
                     else -> {
                         Resource.Error(
-                            actualErrorReturnedFromBackend = responseError,
                             uiErrorMessage = "Error: ${response.message()} Try again later! *${responseError}",
-                            responseCode = response.code()
                         )
                     }
                 }
@@ -79,8 +70,7 @@ class APISHelpers @Inject constructor() {
                     Log.e(tag, "HttpException: " + throwable.message.toString())
 
                     Resource.Error(
-                        uiErrorMessage = "Server Error! Try again later",
-                        actualErrorReturnedFromBackend = "${ApiResponseErrors.EXCEPTION.errorMessage}: ${throwable.message.toString()}"
+                        uiErrorMessage = "Server Error! Try again later"
                     )
                 }
 
@@ -88,8 +78,7 @@ class APISHelpers @Inject constructor() {
                     Log.e(tag, "IOException: " + throwable.message.toString())
 
                     Resource.Error(
-                        uiErrorMessage = "Check your internet connection",
-                        actualErrorReturnedFromBackend = "${ApiResponseErrors.EXCEPTION.errorMessage}: ${throwable.message.toString()}"
+                        uiErrorMessage = "Check your internet connection"
                     )
                 }
 
@@ -97,8 +86,7 @@ class APISHelpers @Inject constructor() {
                     Log.e(tag, "TimeoutException:" + throwable.message.toString())
 
                     Resource.Error(
-                        uiErrorMessage = ApiResponseErrors.TIMEOUT_EXCEPTION.errorMessage,
-                        actualErrorReturnedFromBackend = ApiResponseErrors.TIMEOUT_EXCEPTION.errorMessage
+                        uiErrorMessage = ApiResponseErrors.TIMEOUT_EXCEPTION.errorMessage
                     )
                 }
 
@@ -106,8 +94,7 @@ class APISHelpers @Inject constructor() {
                     Log.e(tag, "Exception:" + throwable.message.toString())
 
                     Resource.Error(
-                        uiErrorMessage = "Something went wrong",
-                        actualErrorReturnedFromBackend = "${ApiResponseErrors.EXCEPTION.errorMessage}: ${throwable.message.toString()}"
+                        uiErrorMessage = "Something went wrong"
                     )
                 }
             }

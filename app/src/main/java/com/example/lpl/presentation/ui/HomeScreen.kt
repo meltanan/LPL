@@ -41,6 +41,7 @@ import com.example.lpl.common.showToast
 import com.example.lpl.data.util.UiState
 import com.example.lpl.domian.model.Client
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Spacer
 
 @Composable
 fun HomeScree(
@@ -144,6 +145,8 @@ fun HomeScree(
 
                 Column(modifier = Modifier.fillMaxHeight()) {
 
+                    Spacer(modifier = Modifier.height(4.dp))
+
                     TextComponent("Name: ",client.name)
                     TextComponent("ID: ", client.id.toString())
                     TextComponent("Email: ",client.email)
@@ -155,7 +158,7 @@ fun HomeScree(
 
     @Composable
     fun ShowClientsData(clients: List<Client>) {
-        LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
+        LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
             items(clients) { client ->
 
                 ClientCard( client)
