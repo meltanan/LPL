@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,6 +40,7 @@ import com.example.lpl.common.TextComponent
 import com.example.lpl.common.showToast
 import com.example.lpl.data.util.UiState
 import com.example.lpl.domian.model.Client
+import android.content.res.Configuration
 
 @Composable
 fun HomeScree(
@@ -48,6 +51,24 @@ fun HomeScree(
 
     @Composable
     fun ClientCard(client: Client) {
+        val configuration = LocalConfiguration.current
+
+            val cardHeight = when (configuration.orientation) {
+                Configuration.ORIENTATION_LANDSCAPE -> {
+                    200
+                    // Your landscape-specific UI elements here
+                }
+
+                Configuration.ORIENTATION_PORTRAIT -> {
+                    326
+                    // Your portrait-specific UI elements here
+                }
+
+                else -> {
+                    326
+                }
+            }
+
         var openGallery by rememberSaveable { mutableStateOf(false) }
         var updateImage by rememberSaveable { mutableStateOf(false) }
         val galleryErrorMessage = "There is no gallery on your device"
@@ -86,7 +107,7 @@ fun HomeScree(
                 .background(Color.White)
                 .padding(10.dp)
                 .fillMaxWidth()
-                .height(340.dp),
+                .height(cardHeight.dp),
             border = BorderStroke(2.dp, Color.Blue),
         ) {
 
@@ -121,7 +142,7 @@ fun HomeScree(
                     )
                 }
 
-                Column {
+                Column(modifier = Modifier.fillMaxHeight()) {
 
                     TextComponent("Name: ",client.name)
                     TextComponent("ID: ", client.id.toString())

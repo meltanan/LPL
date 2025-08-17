@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -25,9 +26,10 @@ object AppModule {
 
     @Singleton
     fun <S> createService(serviceClass: Class<S>): S {
-
+        val interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
         val httpClientBuilder = OkHttpClient.Builder()
 
+        httpClientBuilder.addInterceptor(interceptor)
         //add this to log out user when token or response is not valid
         // httpClientBuilder.authenticator(TokenAuthenticator())
         httpClientBuilder.connectTimeout(90, TimeUnit.SECONDS)
